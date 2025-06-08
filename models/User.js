@@ -21,8 +21,7 @@ const userSchema = new mongoose.Schema({
     default: 'https://api.dicebear.com/7.x/identicon/svg?seed=default&backgroundColor=ffdfbf'
   },
   savedRecipes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Recipe'
+    type: String  // Changed from ObjectId to String for mock recipe IDs
   }],
   createdAt: {
     type: Date,

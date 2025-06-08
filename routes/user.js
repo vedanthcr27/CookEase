@@ -6,7 +6,8 @@ const User = require('../models/User');
 // Get saved recipes
 router.get('/saved-recipes', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).populate('savedRecipes');
+    const user = await User.findById(req.user.userId);
+    // Return the saved recipe IDs since we're using mock data
     res.json(user.savedRecipes);
   } catch (error) {
     console.error('Get saved recipes error:', error);
@@ -18,8 +19,11 @@ router.get('/saved-recipes', auth, async (req, res) => {
 router.post('/save-recipe/:recipeId', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
-    if (!user.savedRecipes.includes(req.params.recipeId)) {
-      user.savedRecipes.push(req.params.recipeId);
+    const recipeId = req.params.recipeId;
+    
+    // Check if recipe is already saved
+    if (!user.savedRecipes.includes(recipeId)) {
+      user.savedRecipes.push(recipeId);
       await user.save();
     }
     res.json({ message: 'Recipe saved successfully' });
@@ -33,9 +37,10 @@ router.post('/save-recipe/:recipeId', auth, async (req, res) => {
 router.delete('/unsave-recipe/:recipeId', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
-    user.savedRecipes = user.savedRecipes.filter(
-      recipeId => recipeId.toString() !== req.params.recipeId
-    );
+    const recipeId = req.params.recipeId;
+    
+    // Remove the recipe ID from savedRecipes
+    user.savedRecipes = user.savedRecipes.filter(id => id !== recipeId);
     await user.save();
     res.json({ message: 'Recipe unsaved successfully' });
   } catch (error) {
