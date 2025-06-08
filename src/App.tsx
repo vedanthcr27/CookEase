@@ -6,12 +6,13 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import RecipePage from './pages/RecipePage';
 import SavedRecipes from './pages/SavedRecipes';
-import AboutUs from './pages/AboutUs';
+import AboutPage from './pages/AboutPage';
 import Profile from './pages/Profile';
 import SearchByIngredient from './pages/SearchByIngredient';
 import Recipes from './pages/Recipes';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
 import { AuthProvider } from './context/AuthContext';
 
 const App: React.FC = () => {
@@ -25,12 +26,13 @@ const App: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/recipe/:id" element={<RecipePage />} />
                 <Route path="/saved-recipes" element={<SavedRecipes />} />
-                <Route path="/about" element={<AboutUs />} />
+                <Route path="/about" element={<AboutPage />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/search" element={<SearchByIngredient />} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
               </Routes>
             </Layout>
           </RecipeProvider>

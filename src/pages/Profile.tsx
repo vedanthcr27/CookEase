@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
@@ -9,6 +9,23 @@ const Profile: React.FC = () => {
   const { user, logout } = useAuth();
   const { savedRecipes } = useUser();
   const navigate = useNavigate();
+  const [storedData, setStoredData] = useState<any>(null);
+
+  useEffect(() => {
+    // Get all data from localStorage
+    const allData: { [key: string]: any } = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        try {
+          allData[key] = JSON.parse(localStorage.getItem(key) || '{}');
+        } catch (e) {
+          allData[key] = localStorage.getItem(key);
+        }
+      }
+    }
+    setStoredData(allData);
+  }, []);
 
   if (!user) {
     navigate('/login');
@@ -131,6 +148,15 @@ const Profile: React.FC = () => {
                 </button>
               </div>
             </motion.div>
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Stored Data</h2>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <pre className="whitespace-pre-wrap text-sm text-gray-600">
+              {JSON.stringify(storedData, null, 2)}
+            </pre>
           </div>
         </div>
       </motion.div>

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Recipe } from '../types/recipe';
 import { api } from '../services/api';
 import { useAuth } from './AuthContext';
+import { recipes as mockRecipes } from '../data/recipes';
 
 interface UserContextType {
   savedRecipes: Recipe[];
@@ -35,7 +36,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (response.error) {
         setError(response.error);
       } else {
-        setSavedRecipes(response.data);
+        // Convert saved recipe IDs to full recipe objects
+        const savedRecipeIds = response.data;
+        const savedRecipes = mockRecipes.filter(recipe => savedRecipeIds.includes(recipe.id));
+        setSavedRecipes(savedRecipes);
       }
     } catch (err) {
       setError('Failed to load saved recipes');

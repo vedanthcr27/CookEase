@@ -7,7 +7,7 @@ import CategoryFilter from '../components/CategoryFilter';
 import { useRecipes } from '../context/RecipeContext';
 
 const Home: React.FC = () => {
-  const { recipes } = useRecipes();
+  const { recipes, isLoading, error } = useRecipes();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const Home: React.FC = () => {
     if (selectedCategory === 'All') {
       return recipes;
     }
-    return recipes.filter(recipe => recipe.categories.includes(selectedCategory));
+    return recipes.filter(recipe => recipe.categories?.includes(selectedCategory));
   }, [selectedCategory, recipes]);
 
   // Extract featured recipes (first 3 recipes)
@@ -25,6 +25,33 @@ const Home: React.FC = () => {
   const handleRecipeClick = (recipeId: string) => {
     navigate(`/recipe/${recipeId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading recipes...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -74,60 +101,59 @@ const Home: React.FC = () => {
       </motion.section>
 
       {/* Featured Recipes */}
-      <section className="py-20 bg-gradient-to-b from-amber-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif font-bold text-gray-800 mb-4">
-              Featured Recipes
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Discover our handpicked selection of the most popular and delicious Indian recipes, perfect for any occasion.
-            </p>
+      {featuredRecipes.length > 0 && (
+        <section className="py-20 bg-gradient-to-b from-amber-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-serif font-bold text-gray-800 mb-4">
+                Featured Recipes
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Discover our handpicked selection of the most popular and delicious Indian recipes, perfect for any occasion.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredRecipes.map(recipe => (
+                <div key={recipe.id} onClick={() => handleRecipeClick(recipe.id)}>
+                  <RecipeCard recipe={recipe} />
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredRecipes.map(recipe => (
-              <div key={recipe.id} onClick={() => handleRecipeClick(recipe.id)}>
-                <RecipeCard recipe={recipe} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Browse by Category */}
-      <section className="py-12 sm:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-gray-800 mb-4">
-              Browse by Category
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Find the perfect recipe for any meal or occasion with our easy-to-use category filter.
-            </p>
-          </div>
-          <CategoryFilter
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-          />
-          
-          <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
-            {displayedRecipes.map(recipe => (
-              <div 
-                key={recipe.id} 
-                onClick={() => handleRecipeClick(recipe.id)}
-                className="transform transition-transform hover:scale-105"
-              >
-                <RecipeCard recipe={recipe} />
-              </div>
-            ))}
-          </div>
-          {displayedRecipes.length === 0 && (
-            <div className="text-center py-8 sm:py-12">
-              <p className="text-gray-600 text-lg">No recipes found in the selected category.</p>
+      {displayedRecipes.length > 0 && (
+        <section className="py-12 sm:py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-gray-800 mb-4">
+                Browse by Category
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Find the perfect recipe for any meal or occasion with our easy-to-use category filter.
+              </p>
             </div>
-          )}
-        </div>
-      </section>
+            <CategoryFilter
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+            
+            <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
+              {displayedRecipes.map(recipe => (
+                <div 
+                  key={recipe.id} 
+                  onClick={() => handleRecipeClick(recipe.id)}
+                  className="transform transition-transform hover:scale-105"
+                >
+                  <RecipeCard recipe={recipe} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Why Choose Us */}
       <section className="py-12 sm:py-20 bg-gradient-to-b from-white to-amber-50">

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Recipe } from '../types/recipe';
 import { api } from '../services/api';
+import { mockRecipes } from '../mockData';
 
 interface RecipeContextType {
   recipes: Recipe[];
@@ -28,12 +29,8 @@ export const RecipeProvider: React.FC<RecipeProviderProps> = ({ children }) => {
   const loadRecipes = async () => {
     try {
       setIsLoading(true);
-      const response = await api.recipes.getAll();
-      if (response.error) {
-        setError(response.error);
-      } else {
-        setRecipes(response.data);
-      }
+      // Use mock data for recipes
+      setRecipes(mockRecipes);
     } catch (err) {
       setError('Failed to load recipes');
     } finally {
@@ -44,12 +41,8 @@ export const RecipeProvider: React.FC<RecipeProviderProps> = ({ children }) => {
   // Get recipe by ID
   const getRecipeById = async (id: string): Promise<Recipe | undefined> => {
     try {
-      const response = await api.recipes.getById(id);
-      if (response.error) {
-        setError(response.error);
-        return undefined;
-      }
-      return response.data || undefined;
+      // Use mock data for recipes
+      return mockRecipes.find(recipe => recipe.id === id);
     } catch (err) {
       setError('Failed to fetch recipe');
       return undefined;
@@ -59,12 +52,14 @@ export const RecipeProvider: React.FC<RecipeProviderProps> = ({ children }) => {
   // Find recipes based on available ingredients
   const findRecipesByIngredients = async (ingredients: string[]): Promise<Recipe[]> => {
     try {
-      const response = await api.recipes.searchByIngredients(ingredients);
-      if (response.error) {
-        setError(response.error);
-        return [];
-      }
-      return response.data;
+      // Use mock data for recipes
+      return mockRecipes.filter(recipe => 
+        ingredients.some(ingredient => 
+          recipe.ingredients.some(recipeIngredient => 
+            recipeIngredient.toLowerCase().includes(ingredient.toLowerCase())
+          )
+        )
+      );
     } catch (err) {
       setError('Failed to search recipes');
       return [];

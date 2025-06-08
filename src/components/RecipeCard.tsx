@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Clock, Users, ChefHat } from 'lucide-react';
 import { Recipe } from '../types/recipe';
 
@@ -7,8 +8,17 @@ interface RecipeCardProps {
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/recipe/${recipe.id}`);
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden h-full">
+    <div 
+      className="bg-white rounded-xl shadow-md overflow-hidden h-full cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={handleClick}
+    >
       <div className="relative h-40 sm:h-48">
         <img
           src={recipe.image}
@@ -19,30 +29,38 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
           <h3 className="text-lg sm:text-xl font-semibold text-white mb-1 line-clamp-1">{recipe.title}</h3>
           <div className="flex items-center gap-2 text-sm text-white/90">
-            <span className="flex items-center gap-1">
-              <Clock size={14} />
-              {recipe.cookTime} mins
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1">
-              <ChefHat size={14} />
-              {recipe.difficulty}
-            </span>
+            {recipe.cookTime && (
+              <>
+                <span className="flex items-center gap-1">
+                  <Clock size={14} />
+                  {recipe.cookTime} mins
+                </span>
+                <span>•</span>
+              </>
+            )}
+            {recipe.difficulty && (
+              <span className="flex items-center gap-1">
+                <ChefHat size={14} />
+                {recipe.difficulty}
+              </span>
+            )}
           </div>
         </div>
       </div>
       <div className="p-3 sm:p-4">
         <p className="text-sm sm:text-base text-gray-600 line-clamp-2 mb-3">{recipe.description}</p>
-        <div className="flex flex-wrap gap-1 sm:gap-2">
-          {recipe.categories.slice(0, 3).map(category => (
-            <span
-              key={category}
-              className="text-xs px-2 py-1 bg-orange-100 text-orange-800 rounded-full"
-            >
-              {category}
-            </span>
-          ))}
-        </div>
+        {recipe.categories && recipe.categories.length > 0 && (
+          <div className="flex flex-wrap gap-1 sm:gap-2">
+            {recipe.categories.slice(0, 3).map(category => (
+              <span
+                key={category}
+                className="text-xs px-2 py-1 bg-orange-100 text-orange-800 rounded-full"
+              >
+                {category}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -153,6 +153,22 @@ const RecipePage: React.FC = () => {
                       </li>
                     ))}
                   </ol>
+                  {recipe.cookTime && (
+                    <div className="mt-8 border-t pt-6">
+                      <button
+                        onClick={() => setShowTimer(!showTimer)}
+                        className="w-full py-3 px-4 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Clock size={20} />
+                        {showTimer ? 'Hide Cooking Timer' : 'Show Cooking Timer'}
+                      </button>
+                      {showTimer && (
+                        <div className="mt-4">
+                          <CookingTimer duration={recipe.cookTime} />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </motion.div>
               </div>
 
@@ -164,7 +180,7 @@ const RecipePage: React.FC = () => {
                     <div>
                       <h4 className="font-medium text-gray-700 mb-2">Categories</h4>
                       <div className="flex flex-wrap gap-2">
-                        {recipe.categories.map((category: string) => (
+                        {recipe.categories?.map((category: string) => (
                           <span
                             key={category}
                             className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm"
@@ -185,7 +201,7 @@ const RecipePage: React.FC = () => {
                     <div>
                       <h4 className="font-medium text-gray-700 mb-2">Nutrition</h4>
                       <div className="grid grid-cols-2 gap-2">
-                        {Object.entries(recipe.nutrition).map(([key, value]) => (
+                        {recipe.nutrition && Object.entries(recipe.nutrition).map(([key, value]) => (
                           <div key={key} className="bg-white rounded-lg p-2">
                             <p className="text-sm text-gray-500">{key}</p>
                             <p className="font-medium text-gray-800">{value}</p>
