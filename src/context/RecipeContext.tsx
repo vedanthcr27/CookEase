@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Recipe } from '../types/recipe';
-import { api } from '../services/api';
 import { mockRecipes } from '../mockData';
 
 interface RecipeContextType {
@@ -18,52 +17,24 @@ interface RecipeProviderProps {
 }
 
 export const RecipeProvider: React.FC<RecipeProviderProps> = ({ children }) => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadRecipes();
-  }, []);
-
-  const loadRecipes = async () => {
-    try {
-      setIsLoading(true);
-      // Use mock data for recipes
-      setRecipes(mockRecipes);
-    } catch (err) {
-      setError('Failed to load recipes');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [recipes] = useState<Recipe[]>(mockRecipes);
+  const [isLoading] = useState(false);
+  const [error] = useState<string | null>(null);
 
   // Get recipe by ID
   const getRecipeById = async (id: string): Promise<Recipe | undefined> => {
-    try {
-      // Use mock data for recipes
-      return mockRecipes.find(recipe => recipe.id === id);
-    } catch (err) {
-      setError('Failed to fetch recipe');
-      return undefined;
-    }
+    return recipes.find(recipe => recipe.id === id);
   };
 
   // Find recipes based on available ingredients
   const findRecipesByIngredients = async (ingredients: string[]): Promise<Recipe[]> => {
-    try {
-      // Use mock data for recipes
-      return mockRecipes.filter(recipe => 
-        ingredients.some(ingredient => 
-          recipe.ingredients.some(recipeIngredient => 
-            recipeIngredient.toLowerCase().includes(ingredient.toLowerCase())
-          )
+    return recipes.filter(recipe => 
+      ingredients.some(ingredient => 
+        recipe.ingredients.some(recipeIngredient => 
+          recipeIngredient.toLowerCase().includes(ingredient.toLowerCase())
         )
-      );
-    } catch (err) {
-      setError('Failed to search recipes');
-      return [];
-    }
+      )
+    );
   };
 
   return (
